@@ -1,6 +1,5 @@
 import debug from 'debug';
-import Immutable from 'immutable';
-
+import Immutable, { Map } from 'immutable';
 
 class LocalStore {
   constructor(store, key = store.displayName) {
@@ -26,15 +25,26 @@ class LocalStore {
   }
 
   save(data) {
-    let saveState = data || this.store.state || Immutable.Map();
-    let stateStr  = JSON.stringify(saveState.toJS());
+    let saveState = data || this.store.state;
+    if (Map.isMap(saveState)) {
+      saveState = saveState.toJS();
+    }
+
+    let stateStr = JSON.stringify(saveState);
     this.debug('saving store state to localStorage', stateStr);
     localStorage.setItem(this.key, stateStr);
   }
 
   restore() {
     let state = JSON.parse(localStorage.getItem(this.key) || '{}');
-    this.store.setState( old => old.merge(Immutable.fromJS(state)) );
+
+    this.store.setState(old => {
+      if (Map.isMap(old)) {
+        return old.merge(Immutable.fromJS(state));
+      }
+
+      return { ...old, ...state };
+    });
     this.debug('loading store state from localStorage', state);
     return this.store.state;
   }

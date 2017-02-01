@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/felixmc/alt-localstore.git"
+    "url": "git+https://github.com/substantial/alt-localstore.git"
   },
   "keywords": [
     "alt",
